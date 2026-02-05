@@ -1,13 +1,30 @@
-from sqlalchemy import Column, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
-import uuid
+from sqlalchemy import String, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
 
-class RoleHasPermission(Base):
-    __tablename__ = "role_has_permissions"
+class RolePermission(Base):
+    __tablename__ = "role_permissions"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    role_id = Column(UUID(as_uuid=True), ForeignKey("roles.id"))
-    permission_id = Column(UUID(as_uuid=True), ForeignKey("permissions.id"))
+    role_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("roles.id"),
+        primary_key=True
+    )
+
+    permission_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("permissions.id"),
+        primary_key=True
+    )
+
+    role = relationship(
+        "Role",
+        back_populates="permissions"
+    )
+
+    permission = relationship(
+        "Permission",
+        back_populates="roles"
+    )

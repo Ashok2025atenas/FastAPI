@@ -1,3 +1,5 @@
+from app.core.security import get_current_user
+from app.models.user import User
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -9,15 +11,16 @@ from app.schemas.task import TaskCreate, TaskUpdate, TaskOut
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
 
-@router.post("/", response_model=TaskOut)
+@router.post("/", response_model=TaskOut, status_code=status.HTTP_201_CREATED)
 async def create_task(
     data: TaskCreate,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
+
     task = Task(
         title=data.title,
         description=data.description,
-        priority=data.priority,
     )
     db.add(task)
     await db.commit()
