@@ -14,3 +14,7 @@ async def on_startup():
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(tasks.router)
+
+@app.get("/")
+def root():
+    return {"status": "API is running 🚀"}
